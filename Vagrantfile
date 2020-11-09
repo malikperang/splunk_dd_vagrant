@@ -8,9 +8,7 @@ servers = [
         :box => "centos/7",
         :eth1 => "192.168.20.21",
         :mem => "2048",
-        :cpu => "2",
-        :guess_port => "8001",
-        :host_port => "8001"
+        :cpu => "2"
     },
     {
         :name => "indexer01",
@@ -27,6 +25,14 @@ servers = [
         :eth1 => "192.168.20.23",
         :mem => "2048",
         :cpu => "2"
+    },
+    {
+        :name => "forwarder01",
+        :type => "indexer",
+        :box => "centos/7",
+        :eth1 => "192.168.20.24",
+        :mem => "2048",
+        :cpu => "2"
     }
 ]
 
@@ -36,9 +42,7 @@ $configBox = <<-SCRIPT
     wget -O splunk-8.1.0-f57c09e87251-linux-2.6-x86_64.rpm 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=linux&version=8.1.0&product=splunk&filename=splunk-8.1.0-f57c09e87251-linux-2.6-x86_64.rpm&wget=true'
     chmod 644 splunk-8.1.0-f57c09e87251-linux-2.6-x86_64.rpm
     rpm -i splunk-8.1.0-f57c09e87251-linux-2.6-x86_64.rpm
-    # sudo ln -s /opt/splunk/bin/splunk /usr/bin/splunk
-    # sudo splunk start
-    sudo yum install net-tools
+    sudo ln -s /opt/splunk/bin/splunk /usr/bin/splunk
 SCRIPT
 
 $startup = <<-SCRIPT
@@ -60,13 +64,14 @@ Vagrant.configure("2") do |config|
                 v.customize ["modifyvm", :id, "--memory", opts[:mem]]
                 v.customize ["modifyvm", :id, "--cpus", opts[:cpu]]
             end
-          
+
             #config.vm.network :forwarded_port, guest:opts[:guess_port], host:opts[:host_port]
 
-            # Only Enable on initial
-            # config.vm.provision "shell", inline: $configBox
-            config.vm.provision "shell", inline: $startup
-          
+            # Only Enable on initial setup
+            config.vm.provision "shell", inline: $configBox
+
+            # Enable after all the Splunk's instance in each server are running correctly
+            # config.vm.provision "shell", inline: $startup
         end
     end
-end 
+end
