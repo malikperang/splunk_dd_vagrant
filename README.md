@@ -45,7 +45,7 @@ It will install Splunk on `/opt/splunk` directory on each servers.
 After initial setup is completed, login to each instance to start the Splunk Enterprise 
 instance and accept the license as well as adding admin user for each Splunk Enterpriese instance.
 
-#####Example for Search Head
+##### Example for Search Head
 
 Login to searchead1
 ```
